@@ -65,13 +65,13 @@ print("Dataset split into train and test sets.")
 # Run AutoML
 best_model_before_tuning, automl_predictions_before_tuning = find_autokeras_model(X_train, X_test, y_train, y_test,
                                                                                   task="regression",
-                                                                                  max_trials=5, epochs=50, patience=2)
+                                                                                  max_trials=5, epochs=20, patience=2)
 print("AutoML model training completed.")
 
 # Hyperparameter tuning using Optuna
 tuned_model, tuning_final_params, tuned_predictions = optimize_autokeras_model_using_optuna(X_train, y_train,
                                                                                             timeout=1800, max_trials=5,
-                                                                                            max_epochs=50)
+                                                                                            max_epochs=100)
 print(f"Hyperparameter tuning completed. Best parameters: {tuning_final_params}")
 
 # Log the comparison instead of printing
