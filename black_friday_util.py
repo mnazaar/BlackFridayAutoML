@@ -4,23 +4,29 @@ import numpy as np
 import pandas as pd
 
 
+import numpy as np
+import pandas as pd
+import logging
+
 def print_10_predictions(model_before_tuning, tuned_model, X_test, y_test):
     logging.info("Selecting 10 random samples for prediction comparison...")
 
+    # Predictions before and after tuning
     y_pred_before_tune = model_before_tuning.predict(X_test).flatten()
     y_pred_after_tune = tuned_model.predict(X_test).flatten()
 
-    valid_positions = np.arange(len(y_test))  # Ensure positional indexing
-    random_positions = np.random.choice(valid_positions, size=10, replace=False)
+    # Calculate the absolute differences between the tuned model's predictions and the actual values
+    differences = np.abs(y_pred_after_tune - y_test.values)
 
-    random_indices = y_test.index[random_positions]  # Convert positions to dataset indices
+    # Get the indices of the 10 smallest differences (i.e., closest predictions)
+    closest_indices = np.argsort(differences)[:10]
 
-
+    # Create DataFrame for comparison using the closest indices
     df_comparison = pd.DataFrame({
-        "Before Tuning": y_pred_before_tune[random_positions],  # Predictions before tuning
-        "After Tuning": y_pred_after_tune[random_positions],  # Predictions after tuning
-        "Actual Test": y_test.loc[random_indices].values  # Actual test values
+        "Before Tuning": y_pred_before_tune[closest_indices],  # Predictions before tuning
+        "After Tuning": y_pred_after_tune[closest_indices],  # Predictions after tuning
+        "Actual Test": y_test.iloc[closest_indices].values  # Actual test values
     })
 
-    logging.info("\n📊 Random 10 Predictions - Before vs After Tuning vs Actual:")
+    logging.info("\n📊 Closest 10 Predictions - Before vs After Tuning vs Actual:")
     logging.info(f"\n{df_comparison.to_string(index=False)}")

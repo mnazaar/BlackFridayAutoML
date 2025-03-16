@@ -183,7 +183,6 @@ def train_best_model(X_train, X_test, y_train, y_test, best_params):
 
     logging.info(f"\n Best Model after tuning Summary:\n{table}")
 
-
     # 🔹 **Evaluate the final model**
     final_predictions = best_model.predict(X_test_np).flatten()
     best_model.save("models/best_autokeras_model.keras")

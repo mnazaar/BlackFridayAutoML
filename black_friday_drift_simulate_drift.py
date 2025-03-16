@@ -3,7 +3,6 @@ import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from black_friday_automl import find_autokeras_model
 from black_friday_dataset import load_dataset, save_dataset, load_transformed_dataset
 from black_friday_drift_detection import detect_drift_ks  # Import the improved method
 from black_friday_feature_engg import drop_id_fields, replace_missing_values_with_unknown, one_hot_encode, \
@@ -48,7 +47,7 @@ if drift_detected:
 
     # Hyperparameter tuning using Optuna
     tuned_model, tuning_final_params, tuned_predictions = optimize_autokeras_model_using_optuna(X_train, y_train,
-                                                                                                timeout=600,
+                                                                                                timeout=1800,
                                                                                                 max_trials=5,
                                                                                                 max_epochs=50)
     logging.info(f"Hyperparameter tuning completed. Best parameters: {tuning_final_params}")

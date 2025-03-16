@@ -6,8 +6,6 @@ from dataprep.eda import create_report
 
 from ydata_profiling import ProfileReport
 
-# Configure logging for EDA
-eda_log_file = "eda_analysis.log"
 
 
 def eda_pandas_profiling(df, name):
