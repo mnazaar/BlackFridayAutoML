@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 def shap_explain(model, X):
     if len(X) > 5000:
         X = X.sample(5000)
-    logging.info("Generating explanations using SHAP...")
+    print("Generating explanations using SHAP...")
     explainer = shap.TreeExplainer(model, feature_perturbation="tree_path_dependent")
     shap_values = explainer.shap_values(X)
     matplotlib.use("Agg")  # Use a non-interactive backend
@@ -25,28 +25,28 @@ def shap_explain(model, X):
     plt.savefig(save_to_path)
     plt.close()
 
-    logging.info(f"SHAP summary plot saved at {save_to_path}")
+    print(f"SHAP summary plot saved at {save_to_path}")
     return shap_values
 
 
 # Load or Train Model for Explanation
 def get_model_for_explain(X, y, model_path="models/explanation_model.pkl"):
     if os.path.exists(model_path):
-        logging.info(f"Loading model from {model_path}")
+        print(f"Loading model from {model_path}")
         model = joblib.load(model_path)
     else:
-        logging.info("Fitting the model for explanations...")
+        print("Fitting the model for explanations...")
         model = lgb.LGBMRegressor(n_estimators=100, random_state=42)
         model.fit(X, y)
         joblib.dump(model, model_path)
-        logging.info(f"Model saved to {model_path}")
+        print(f"Model saved to {model_path}")
 
     return model
 
 
 # LIME Local Explanation
 def lime_explain(model, X):
-    logging.info("Generating local explanations using LIME...")
+    print("Generating local explanations using LIME...")
 
     explainer_lime = lime.lime_tabular.LimeTabularExplainer(
         training_data=X.values,
@@ -62,6 +62,6 @@ def lime_explain(model, X):
         file_path = f"reports/lime_instance_{index}.html"
         exp.save_to_file(file_path)
 
-        logging.info(f"Local Explanation for Instance {index} saved to {file_path}")
+        print(f"Local Explanation for Instance {index} saved to {file_path}")
 
     return exp

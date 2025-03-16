@@ -40,8 +40,8 @@ def objective(trial, X_train, X_val, y_train, y_val, max_epochs=30):
         dropout_rate = trial.suggest_float("dropout_rate", 0.0, 0.5)  # Prevent overfitting
         global current_trial
         current_trial = current_trial + 1
-        logging.info(f"Starting hyperparameter search trial  {current_trial}")
-        logging.info(f"Trial params: epochs={epochs}, lr={learning_rate}, "
+        print(f"Starting hyperparameter search trial  {current_trial}")
+        print(f"Trial params: epochs={epochs}, lr={learning_rate}, "
                      f"batch_size={batch_size}, optimizer={optimizer_name}, dropout={dropout_rate}")
 
         # Select optimizer
@@ -64,7 +64,7 @@ def objective(trial, X_train, X_val, y_train, y_val, max_epochs=30):
         y_pred = best_model.predict(X_val_np).flatten()
         rmse = np.sqrt(mean_squared_error(y_val_np, y_pred))
 
-        logging.info(f"Trial {current_trial} RMSE: {rmse:.4f}")
+        print(f"Trial {current_trial} RMSE: {rmse:.4f}")
 
         # Log parameters and metrics to MLflow
         mlflow.set_experiment("AutoML Hyperparameter Optimization")
@@ -94,7 +94,7 @@ def check_nan(df, name):
 
 # Function to run Optuna tuning
 def optimize_autokeras_model_using_optuna(X, y, timeout=600, max_trials=20, max_epochs=20):
-    logging.info("\n Starting Optuna hyperparameter tuning for AutoKeras...")
+    print("\n Starting Optuna hyperparameter tuning for AutoKeras...")
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -109,7 +109,7 @@ def optimize_autokeras_model_using_optuna(X, y, timeout=600, max_trials=20, max_
     study.optimize(lambda trial: objective(trial, X_train, X_val, y_train, y_val, max_epochs=max_epochs),
                    timeout=timeout, n_trials=max_trials)
 
-    logging.info(f"Best Parameters: {study.best_params}")
+    print(f"Best Parameters: {study.best_params}")
     mlflow.set_experiment("AutoML Hyperparameter Optimization")
     mlflow.log_params(study.best_params)
     mlflow.log_metric("best_rmse", study.best_value)
@@ -133,7 +133,7 @@ def optimize_autokeras_model_using_optuna(X, y, timeout=600, max_trials=20, max_
 
 
 def train_best_model(X_train, X_test, y_train, y_test, best_params):
-    logging.info("\nTraining the best AutoKeras model with optimized hyperparameters...")
+    print("\nTraining the best AutoKeras model with optimized hyperparameters...")
 
     # Convert DataFrame to NumPy array
     X_train_np, X_test_np = X_train.to_numpy(), X_test.to_numpy()
@@ -181,11 +181,11 @@ def train_best_model(X_train, X_test, y_train, y_test, best_params):
         tablefmt="grid"
     )
 
-    logging.info(f"\n Best Model after tuning Summary:\n{table}")
+    print(f"\n Best Model after tuning Summary:\n{table}")
 
     # 🔹 **Evaluate the final model**
     final_predictions = best_model.predict(X_test_np).flatten()
     best_model.save("models/best_autokeras_model.keras")
-    logging.info("\n Completed Training the best AutoKeras model with optimized hyperparameters...")
+    print("\n Completed Training the best AutoKeras model with optimized hyperparameters...")
 
     return best_model, final_predictions

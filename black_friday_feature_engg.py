@@ -3,17 +3,17 @@ from sklearn.preprocessing import StandardScaler
 
 
 def drop_id_fields(df):
-    logging.info(f"Dropping ID fields. Before:\n{df.sample(10)}")
+    print(f"Dropping ID fields. Before:\n{df.sample(10)}")
 
     df = df.drop(columns=["Product_ID", "User_ID"], errors="ignore")  # Drop columns safely
 
-    logging.info(f"After dropping ID fields:\n{df.sample(10)}")
+    print(f"After dropping ID fields:\n{df.sample(10)}")
 
     return df
 
 
 def replace_missing_values_with_unknown(df):
-    logging.info(f"Replace missing values with Unknown:\n{df.sample(10)}")
+    print(f"Replace missing values with Unknown:\n{df.sample(10)}")
 
     df["Product_Category_2"].fillna("Unknown", inplace=True)
     df["Product_Category_3"].fillna("Unknown", inplace=True)
@@ -22,7 +22,7 @@ def replace_missing_values_with_unknown(df):
 
 
 def one_hot_encode(df):
-    logging.info(f"One hot encoding:\n{df.sample(10)}")
+    print(f"One hot encoding:\n{df.sample(10)}")
 
     df = pd.get_dummies(df, columns=["Gender"], drop_first=True)
     df = pd.get_dummies(df, columns=["Age"], drop_first=True)
@@ -47,7 +47,7 @@ def convert_bool_to_int(df):
 
 # Feature Engineering - Scaling Features
 def scale_features(df):
-    logging.info("Feature scaling started...")
+    print("Feature scaling started...")
 
     scaler = StandardScaler()
 
@@ -55,5 +55,5 @@ def scale_features(df):
     df_scaled = df.copy()
     df_scaled["Occupation"] = scaler.fit_transform(df[["Occupation"]])
 
-    logging.info("Feature scaling completed.")
+    print("Feature scaling completed.")
     return df_scaled

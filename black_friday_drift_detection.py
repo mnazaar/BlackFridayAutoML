@@ -42,6 +42,6 @@ def detect_drift_ks(train_data: pd.DataFrame, new_data: pd.DataFrame):
             if drift_detected:
                 break
 
-    logging.info("\nDrift Detection Results:\n" + json.dumps(test_results, indent=2))
+    print("\nDrift Detection Results:\n" + json.dumps(test_results, indent=2))
 
     return test_results, drift_detected

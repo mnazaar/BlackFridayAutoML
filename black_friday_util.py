@@ -9,7 +9,7 @@ import pandas as pd
 import logging
 
 def print_10_predictions(model_before_tuning, tuned_model, X_test, y_test):
-    logging.info("Selecting 10 random samples for prediction comparison...")
+    print("Selecting 10 random samples for prediction comparison...")
 
     # Predictions before and after tuning
     y_pred_before_tune = model_before_tuning.predict(X_test).flatten()
@@ -28,5 +28,5 @@ def print_10_predictions(model_before_tuning, tuned_model, X_test, y_test):
         "Actual Test": y_test.iloc[closest_indices].values  # Actual test values
     })
 
-    logging.info("\n📊 Closest 10 Predictions - Before vs After Tuning vs Actual:")
-    logging.info(f"\n{df_comparison.to_string(index=False)}")
+    print("\n📊 Closest 10 Predictions - Before vs After Tuning vs Actual:")
+    print(f"\n{df_comparison.to_string(index=False)}")

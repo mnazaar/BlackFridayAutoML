@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 
 def find_autokeras_model(X_train, X_test, y_train, y_test, task="regression", max_trials=10, epochs=20, patience=5):
-    logging.info("Starting AutoML training with AutoKeras...")
+    print("Starting AutoML training with AutoKeras...")
 
     # Convert DataFrames to NumPy arrays
     X_train = X_train.to_numpy() if isinstance(X_train, pd.DataFrame) else X_train
@@ -30,26 +30,26 @@ def find_autokeras_model(X_train, X_test, y_train, y_test, task="regression", ma
 
         def on_train_begin(self, logs=None):
             TrialLogger.trial_count += 1
-            logging.info(f"Trial #{TrialLogger.trial_count} started...")
+            print(f"Trial #{TrialLogger.trial_count} started...")
 
         def on_epoch_end(self, epoch, logs=None):
             logs = logs or {}
-            logging.info(
+            print(
                 f"Epoch {epoch + 1}/{epochs} - Loss: {logs.get('loss', 'N/A')} - Val Loss: {logs.get('val_loss', 'N/A')}")
 
         def on_train_end(self, logs=None):
-            logging.info(f"Trial #{TrialLogger.trial_count} completed!")
+            print(f"Trial #{TrialLogger.trial_count} completed!")
 
             # Extract model details after the trial ends
             trial_model = self.model
             if trial_model is not None:
                 num_layers = len(trial_model.layers)
-                logging.info(f"Trial #{TrialLogger.trial_count} Model has {num_layers} layers.")
+                print(f"Trial #{TrialLogger.trial_count} Model has {num_layers} layers.")
 
                 model_layers = [[layer.name, str(layer.output.shape), f"{layer.count_params():,}"] for layer in
                                 trial_model.layers]
                 table = tabulate(model_layers, headers=["Layer (type)", "Output Shape", "Param #"], tablefmt="grid")
-                logging.info(f"\nTrial #{TrialLogger.trial_count} Model Summary:\n{table}")
+                print(f"\nTrial #{TrialLogger.trial_count} Model Summary:\n{table}")
 
     # Early stopping callback
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=patience, restore_best_weights=True)
@@ -70,7 +70,7 @@ def find_autokeras_model(X_train, X_test, y_train, y_test, task="regression", ma
         tablefmt="grid"
     )
 
-    logging.info(f"\n Best Model Summary:\n{table}")
+    print(f"\n Best Model Summary:\n{table}")
 
     # Make Predictions
     final_predictions = best_model.predict(X_test)
@@ -79,15 +79,15 @@ def find_autokeras_model(X_train, X_test, y_train, y_test, task="regression", ma
     if task == "regression":
         final_predictions = final_predictions.flatten()
         rmse = np.sqrt(mean_squared_error(y_test, final_predictions))
-        logging.info(f"RMSE on Test Set: {rmse:.4f}")
+        print(f"RMSE on Test Set: {rmse:.4f}")
     else:  # Classification
         final_predictions = np.argmax(final_predictions, axis=1)
         metric = accuracy_score(y_test, final_predictions)
-        logging.info(f"Accuracy on Test Set: {metric:.4f}")
+        print(f"Accuracy on Test Set: {metric:.4f}")
 
-    logging.info("🏆 Best Model Found and Evaluated!")
+    print("🏆 Best Model Found and Evaluated!")
 
     best_model.save("models/best_autokeras_model.keras")
-    logging.info("Completed AutoML training with AutoKeras...")
+    print("Completed AutoML training with AutoKeras...")
 
     return best_model, final_predictions

@@ -12,13 +12,13 @@ def eda_pandas_profiling(df, name):
     """Generate Pandas Profiling EDA report."""
     try:
         os.makedirs("reports", exist_ok=True)
-        logging.info("Generating Pandas Profiling report...")
+        print("Generating Pandas Profiling report...")
 
         profile = ProfileReport(df, title="Black Friday EDA - Pandas Profiling", explorative=True)
         output_path = f"reports/black_friday_eda_pandas_{name}.html"
         profile.to_file(output_path)
 
-        logging.info(f"Pandas Profiling report saved at {output_path}")
+        print(f"Pandas Profiling report saved at {output_path}")
     except Exception as e:
         logging.error(f"Error generating Pandas Profiling report: {e}")
 
