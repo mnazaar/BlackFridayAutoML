@@ -57,8 +57,39 @@ def objective(trial, X_train, X_val, y_train, y_val, max_epochs=30):
         # Compile the modified model
         best_model.compile(optimizer=optimizer, loss="mse")
 
+        # Track trials using a custom callback
+        class TrialLogger(tf.keras.callbacks.Callback):
+            trial_count = 0  # Track trial numbers
+
+            def on_train_begin(self, logs=None):
+                TrialLogger.trial_count += 1
+                print(f"Trial #{TrialLogger.trial_count} started...")
+
+            def on_epoch_end(self, epoch, logs=None):
+                logs = logs or {}
+                print(
+                    f"Epoch {epoch + 1}/{epochs} - Loss: {logs.get('loss', 'N/A')} - Val Loss: {logs.get('val_loss', 'N/A')}")
+
+            def on_train_end(self, logs=None):
+                print(f"Trial #{TrialLogger.trial_count} completed!")
+
+                # Extract model details after the trial ends
+                trial_model = self.model
+                if trial_model is not None:
+                    num_layers = len(trial_model.layers)
+                    print(f"Trial #{TrialLogger.trial_count} Model has {num_layers} layers.")
+
+                    model_layers = [[layer.name, str(layer.output.shape), f"{layer.count_params():,}"] for layer in
+                                    trial_model.layers]
+                    table = tabulate(model_layers, headers=["Layer (type)", "Output Shape", "Param #"], tablefmt="grid")
+                    print(f"\nTrial #{TrialLogger.trial_count} Model Summary:\n{table}")
+
+        # Early stopping callback
+        early_stopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=3,
+                                                          restore_best_weights=True)
         # Train the model
-        best_model.fit(X_train_np, y_train_np, epochs=epochs, batch_size=batch_size, verbose=0)
+        best_model.fit(X_train_np, y_train_np, epochs=epochs, batch_size=batch_size, callbacks=[TrialLogger(), early_stopping], verbose=1)
+
 
         # Evaluate the model
         y_pred = best_model.predict(X_val_np).flatten()
