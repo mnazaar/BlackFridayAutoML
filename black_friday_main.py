@@ -44,6 +44,9 @@ save_dataset(df)
 '''
 df = load_transformed_dataset()
 
+##Original dataset has more than 500000 rows, so taking a sample of 50000 rows to do the model.
+df = df.sample(50000)
+
 # Define X (features) and y (target)
 X = df.drop(columns=["Purchase"])  # All features except target
 y = df["Purchase"]  # Target variable
