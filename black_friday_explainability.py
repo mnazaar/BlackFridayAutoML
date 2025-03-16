@@ -11,9 +11,10 @@ from matplotlib import pyplot as plt
 
 
 # SHAP Global Explanation
-#Do for a sample as bigger dataset runs forever
+# Do for a sample as bigger dataset runs forever
 def shap_explain(model, X):
-    X=X.sample(5000)
+    if len(X) > 5000:
+        X = X.sample(5000)
     logging.info("Generating explanations using SHAP...")
     explainer = shap.TreeExplainer(model, feature_perturbation="tree_path_dependent")
     shap_values = explainer.shap_values(X)
@@ -26,6 +27,7 @@ def shap_explain(model, X):
 
     logging.info(f"SHAP summary plot saved at {save_to_path}")
     return shap_values
+
 
 # Load or Train Model for Explanation
 def get_model_for_explain(X, y, model_path="models/explanation_model.pkl"):
@@ -40,6 +42,7 @@ def get_model_for_explain(X, y, model_path="models/explanation_model.pkl"):
         logging.info(f"Model saved to {model_path}")
 
     return model
+
 
 # LIME Local Explanation
 def lime_explain(model, X):

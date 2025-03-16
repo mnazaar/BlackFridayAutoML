@@ -1,3 +1,7 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+
 def drop_id_fields(df):
     logging.info(f"Dropping ID fields. Before:\n{df.sample(10)}")
 
@@ -30,12 +34,13 @@ def one_hot_encode(df):
 
 
 import logging
+def convert_bool_to_int(df):
+    # Convert all boolean columns to integers (0 and 1)
+    df = df.applymap(lambda x: 1 if x else 0)
+    df = df.applymap(lambda x: 1 if x else 0)
+    return df
 
 # Feature Engineering - Scaling Features
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-
-
 def scale_features(df):
     logging.info("Feature scaling started...")
 
@@ -47,4 +52,3 @@ def scale_features(df):
 
     logging.info("Feature scaling completed.")
     return df_scaled
-
